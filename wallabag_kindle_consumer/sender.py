@@ -21,7 +21,7 @@ class Sender:
 
     def _send_mail(self, title, article, format, email, data):
         msg = MIMEMultipart()
-        msg['Subject'] = "Send article {}".format(article)
+        msg['Subject'] = "Send article '{}'".format(title)
         msg['From'] = self.from_addr
         msg['To'] = email
         msg['Date'] = formatdate(localtime=True)
@@ -39,11 +39,11 @@ class Sender:
 
         smtp = smtplib.SMTP(host=self.host, port=self.port)
         smtp.starttls()
-        if self.user is not None:
+        if self.user:
             smtp.login(self.user, self.passwd)
         smtp.sendmail(self.from_addr, [email], msg.as_string())
         smtp.quit()
-        logger.info("Mail with article {article} in format {format} with title {title} sent to {email}".format(article=article,
+        logger.info("Mail with article {article} in format {format} with title '{title}' sent to {email}".format(article=article,
                                                                                             title=title,
                                                                                             format=format,
                                                                                             email=email))
