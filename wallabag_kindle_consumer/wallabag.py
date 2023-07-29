@@ -115,12 +115,11 @@ class Wallabag:
         async with aiohttp.ClientSession() as session:
             async with session.delete(url, params=params) as resp:
                 if resp.status != 200:
-                    logger.warn("Cannot remove tag {tag} from entry {entry} of user {user}", user=user.name,
-                                entry=article.id, tag=article.tag.tag)
+                    logger.warn("Cannot remove tag {tag} from entry '{entry}' of user {user}", user=user.name,
+                                entry=article.title, tag=article.tag.tag)
                     return
-
-                logger.info("Removed tag {tag} from article {article} of user {user}", user=user.name,
-                            article=article.id, tag=article.tag.tag)
+                logger.info("Removed tag {tag} from article '{article}' of user {user}", user=user.name,
+                            article=article.title, tag=article.tag.tag)
 
     async def export_article(self, user, article_id, format):
         params = self._api_params(user)
