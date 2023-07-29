@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/natilou/wallabag-kindle-consumer/compare/v0.1.0...v0.1.1) (2023-07-29)
+
+
+### Bug Fixes
+
+* send article name in email ([fe86438](https://github.com/natilou/wallabag-kindle-consumer/commit/fe8643864964def2f8560812a83c66eb76a2050c))
+
 ## 0.1.0 (2023-07-25)
 
 
