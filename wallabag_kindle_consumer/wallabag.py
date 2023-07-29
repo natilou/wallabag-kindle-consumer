@@ -26,10 +26,10 @@ Tag = namedtuple('Tag', ['tag', 'format'])
 
 
 def make_tags(tag):
-    return (Tag(tag='{tag}'.format(tag=tag), format='epub'),
-            Tag(tag='{tag}-epub'.format(tag=tag), format='epub'),
-            Tag(tag='{tag}-mobi'.format(tag=tag), format='mobi'),
-            Tag(tag='{tag}-pdf'.format(tag=tag), format='pdf'))
+    return (Tag(tag=f'{tag}', format='epub'),
+            Tag(tag=f'{tag}-epub', format='epub'),
+            Tag(tag=f'{tag}-mobi', format='mobi'),
+            Tag(tag=f'{tag}-pdf', format='pdf'))
 
 
 class Wallabag:
@@ -89,7 +89,7 @@ class Wallabag:
 
     async def fetch_entries(self, user):
         if user.auth_token is None:
-            logger.warn("No auth token for {}".format(user.name))
+            logger.warn(f"No auth token for {user.name}")
             return
         async with aiohttp.ClientSession() as session:
             for tag in self.tags:
@@ -109,8 +109,8 @@ class Wallabag:
 
     async def remove_tag(self, user, article):
         params = self._api_params(user)
-        url = self._url('/api/entries/{entry}/tags/{tag}.json'.format(entry=article.id,
-                                                                      tag=article.tag_id()))
+        tag = article.tag_id()
+        url = self._url(f'/api/entries/{article.id}/tags/{tag}.json')
 
         async with aiohttp.ClientSession() as session:
             async with session.delete(url, params=params) as resp:
@@ -123,7 +123,7 @@ class Wallabag:
 
     async def export_article(self, user, article_id, format):
         params = self._api_params(user)
-        url = self._url("/api/entries/{entry}/export.{format}".format(entry=article_id, format=format))
+        url = self._url(f"/api/entries/{article_id}/export.{format}")
 
         async with aiohttp.ClientSession() as session:
             async with session.get(url, params=params) as resp:
