@@ -1,10 +1,6 @@
-FROM python:3.7-alpine
-# TODO: update python version
-MAINTAINER Jan Losinski <losinski@wh2.tu-dresden.de>
-# TODO: MAINTAINER has been deprecated
-# https://docs.docker.com/engine/reference/builder/#maintainer-deprecated
+FROM python:3.11-alpine
 
-ADD requirements.txt /tmp
+COPY requirements.txt /tmp
 RUN apk add -U --virtual .bdep \
     build-base \
     gcc \
@@ -12,11 +8,10 @@ RUN apk add -U --virtual .bdep \
     pip install -r /tmp/requirements.txt && \
     apk del .bdep
 
-ADD . /app
-VOLUME /data
-
 WORKDIR /app
+COPY . .
 
+VOLUME /data
 EXPOSE 8080
 
 CMD ./service.py --refresher --consumer --interface --env
