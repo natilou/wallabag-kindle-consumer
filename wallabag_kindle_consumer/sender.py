@@ -21,7 +21,7 @@ class Sender:
 
     def _send_mail(self, title, article, format, email, data):
         msg = MIMEMultipart()
-        msg['Subject'] = "Send article '{}'".format(title)
+        msg['Subject'] = f"Send article '{title}'"
         msg['From'] = self.from_addr
         msg['To'] = email
         msg['Date'] = formatdate(localtime=True)
@@ -33,7 +33,7 @@ class Sender:
         mobi = MIMEApplication(data)
         encode_base64(mobi)
         mobi.add_header('Content-Disposition', 'attachment',
-                        filename='{title}.{format}'.format(title=title, format=format))
+                        filename=f'{title}.{format}')
 
         msg.attach(mobi)
 
@@ -43,10 +43,7 @@ class Sender:
             smtp.login(self.user, self.passwd)
         smtp.sendmail(self.from_addr, [email], msg.as_string())
         smtp.quit()
-        logger.info("Mail with article {article} in format {format} with title '{title}' sent to {email}".format(article=article,
-                                                                                            title=title,
-                                                                                            format=format,
-                                                                                            email=email))
+        logger.info(f"Mail with article {article} in format {format} with title '{title}' sent to {email}")
 
     async def send_mail(self, job, data):
         return self.loop.run_in_executor(None, self._send_mail, job.title, job.article, job.format,
