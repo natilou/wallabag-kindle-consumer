@@ -1,14 +1,25 @@
-FROM python:3.11-alpine
+ARG PYTHON_VERSION=3.11
 
-COPY requirements.txt /tmp
-RUN apk add -U --virtual .bdep \
-    build-base \
-    gcc \
-    && \
-    pip install -r /tmp/requirements.txt && \
-    apk del .bdep
+FROM python:${PYTHON_VERSION}-alpine AS builder
+
+RUN apk add -U \
+      build-base \
+      gcc \
+    && pip install pipenv==2023.7.23
+
+WORKDIR /usr/src
+COPY Pipfile Pipfile.lock ./
+
+RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy
+
+
+FROM python:${PYTHON_VERSION}-alpine
 
 WORKDIR /app
+
+COPY --from=builder /usr/src/.venv/ /usr/src/.venv/
+ENV PATH="/usr/src/.venv/bin/:${PATH}"
+
 COPY . .
 
 VOLUME /data
