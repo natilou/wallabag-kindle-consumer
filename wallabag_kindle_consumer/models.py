@@ -1,7 +1,6 @@
-from sqlalchemy import Integer, String, DateTime, Column, ForeignKey, Enum, Boolean
-from sqlalchemy import create_engine
+from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import relationship, sessionmaker
 
 Base = declarative_base()
 
@@ -19,7 +18,7 @@ class User(Base):
     kindle_mail = Column(String)
     active = Column(Boolean, default=True)
 
-    jobs = relationship('Job', backref='user')
+    jobs = relationship("Job", backref="user")
 
 
 class Job(Base):
@@ -29,7 +28,7 @@ class Job(Base):
     article = Column(Integer)
     title = Column(String)
     user_name = Column(Integer, ForeignKey("user.name"))
-    format = Column(Enum('pdf', 'mobi', 'epub'))
+    format = Column(Enum("pdf", "mobi", "epub"))
 
 
 class ContextSession:
@@ -49,9 +48,7 @@ def context_session(config):
 
 
 def session_maker(config):
-    Session = sessionmaker(autocommit=False,
-                           autoflush=False,
-                           bind=create_engine(config.db_uri))
+    Session = sessionmaker(autocommit=False, autoflush=False, bind=create_engine(config.db_uri))
     return Session
 
 

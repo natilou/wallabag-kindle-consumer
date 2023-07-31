@@ -1,5 +1,5 @@
-import dataclasses
 import configparser
+import dataclasses
 import os
 
 from logbook import Logger
@@ -36,11 +36,11 @@ class Config:
         parser = configparser.ConfigParser()
         parser.read(filename)
 
-        if 'DEFAULT' not in parser:
+        if "DEFAULT" not in parser:
             logger.warn("Config file {filename} does not contain a section DEFAULT", filename=filename)
             return None
 
-        dflt = parser['DEFAULT']
+        dflt = parser["DEFAULT"]
 
         tmp = {}
         missing = []
@@ -52,8 +52,9 @@ class Config:
                     missing.append(field.name)
 
         if 0 != len(missing):
-            logger.warn("Config file {filename} does not contain configs for: {lst}", filename=filename,
-                        lst=", ".join(missing))
+            logger.warn(
+                "Config file {filename} does not contain configs for: {lst}", filename=filename, lst=", ".join(missing)
+            )
             return None
 
         return Config(**tmp)
