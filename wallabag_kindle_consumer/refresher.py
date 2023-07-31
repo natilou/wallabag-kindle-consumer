@@ -43,8 +43,10 @@ class Refresher:
                     self._wait_fut = None
 
                 ts = datetime.utcnow() + timedelta(seconds=self.grace)
-                refreshes = [self._refresh_user(user) for user
-                             in session.query(User).filter(User.active == True).filter(User.token_valid < ts).all()]
+                refreshes = [
+                    self._refresh_user(user)
+                    for user in session.query(User).filter(User.active == True).filter(User.token_valid < ts).all()
+                ]
                 await asyncio.gather(*refreshes)
 
                 session.commit()

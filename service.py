@@ -3,11 +3,10 @@
 import argparse
 import asyncio
 import signal
+import sys
 
 import logbook
 import uvloop
-import sys
-
 from logbook import Logger, StreamHandler
 
 from wallabag_kindle_consumer import models
@@ -49,12 +48,12 @@ if __name__ == "__main__":
 
     config = Config.from_file("config.ini")
 
-    if 'cfg' in args and args.cfg is not None:
+    if "cfg" in args and args.cfg is not None:
         new = Config.from_file(args.cfg)
         if new is not None:
             config = new
 
-    if 'env' in args and args.env:
+    if "env" in args and args.env:
         new = Config.from_env()
         if new is not None:
             config = new
@@ -65,13 +64,11 @@ if __name__ == "__main__":
 
     on_stop = []
 
-
     def _stop():
         for cb in on_stop:
             cb()
 
         loop.stop()
-
 
     loop.add_signal_handler(signal.SIGTERM, _stop)
     loop.add_signal_handler(signal.SIGINT, _stop)
