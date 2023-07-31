@@ -1,4 +1,5 @@
-Forked from [janLo/wallabag-kindle-consumer](https://github.com/janLo/wallabag-kindle-consumer)
+This project is a fork  from [janLo/wallabag-kindle-consumer](https://github.com/janLo/wallabag-kindle-consumer)
+Since the original repository has not been maintained, I am now actively maintaining and working to improve it.
 
 # Push tagged wallabag articles to kindle
 
@@ -81,8 +82,8 @@ To initialize the database, run the server once with `--create_db`.
 ## Docker
 
 The provided dockerfile makes it easy to use the software as a docker
-container. The latest state of the main branch can be found as a
-[Automated build on ghcr.io](https://github.com/natilou/wallabag-kindle-consumer/pkgs/container/wallabag-kindle-consumer).
+container. The most recent version from the main branch is available through an
+[automated build on ghcr.io](https://github.com/natilou/wallabag-kindle-consumer/pkgs/container/wallabag-kindle-consumer).
 
 You can easily configure the container via the environment variables from
 above. Just make sure, that the database is in a volume if you use sqlite.
