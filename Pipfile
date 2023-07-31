@@ -9,6 +9,7 @@ uvloop = "~= 0.17"
 
 [dev-packages]
 ipdb = "*"
+pre-commit = "*"
 
 [requires]
 python_version = "3.11"
