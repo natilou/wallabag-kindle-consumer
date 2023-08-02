@@ -2,12 +2,10 @@
 
 import argparse
 import asyncio
+import logging
 import signal
-import sys
 
-import logbook
 import uvloop
-from logbook import Logger, StreamHandler
 
 from wallabag_kindle_consumer import models
 from wallabag_kindle_consumer.config import Config
@@ -16,8 +14,6 @@ from wallabag_kindle_consumer.interface import App
 from wallabag_kindle_consumer.refresher import Refresher
 from wallabag_kindle_consumer.sender import Sender
 from wallabag_kindle_consumer.wallabag import Wallabag
-
-logger = Logger("kindle-consumer")
 
 
 def parse_args():
@@ -40,11 +36,9 @@ if __name__ == "__main__":
 
     args = parse_args()
 
-    level = logbook.INFO
+    logging.basicConfig(level=logging.INFO)
     if args.debug:
-        level = logbook.DEBUG
-
-    StreamHandler(sys.stdout, level=level).push_application()
+        logging.basicConfig(level=logging.DEBUG)
 
     config = Config.from_file("config.ini")
 
@@ -60,7 +54,7 @@ if __name__ == "__main__":
 
     if args.create_db:
         models.create_db(config)
-        logger.info("Database created.")
+        logging.info("Database created.")
 
     on_stop = []
 
@@ -77,19 +71,19 @@ if __name__ == "__main__":
     sender = Sender(loop, config.smtp_from, config.smtp_host, config.smtp_port, config.smtp_user, config.smtp_passwd)
 
     if args.refresher:
-        logger.info("Create Refresher")
+        logging.info("Create Refresher")
         refresher = Refresher(config, wallabag, sender)
         loop.create_task(refresher.refresh())
         on_stop.append(lambda: refresher.stop())
 
     if args.consumer:
-        logger.info("Create Consumer")
+        logging.info("Create Consumer")
         consumer = Consumer(wallabag, config, sender)
         loop.create_task(consumer.consume())
         on_stop.append(lambda: consumer.stop())
 
     if args.interface:
-        logger.info("Create Interface")
+        logging.info("Create Interface")
         webapp = App(config, wallabag)
         loop.create_task(webapp.register_server())
         on_stop.append(lambda: webapp.stop())
