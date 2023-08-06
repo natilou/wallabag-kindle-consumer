@@ -1,34 +1,39 @@
-from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, Integer, String, create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
+import datetime
 
-Base = declarative_base()
+from sqlalchemy import Enum, ForeignKey, create_engine
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
+
+
+class Base(DeclarativeBase):
+    ...
 
 
 class User(Base):
     __tablename__ = "user"
 
-    name = Column(String, primary_key=True)
-    token = Column(String())
-    auth_token = Column(String)
-    refresh_token = Column(String)
-    token_valid = Column(DateTime)
-    last_check = Column(DateTime)
-    email = Column(String)
-    kindle_mail = Column(String)
-    active = Column(Boolean, default=True)
+    name: Mapped[str] = mapped_column(primary_key=True)
+    token: Mapped[str | None]
+    auth_token: Mapped[str]
+    refresh_token: Mapped[str]
+    token_valid: Mapped[datetime.datetime]
+    last_check: Mapped[datetime.datetime | None]
+    email: Mapped[str]
+    kindle_mail: Mapped[str]
+    active: Mapped[bool] = mapped_column(default=True)
 
-    jobs = relationship("Job", backref="user")
+    jobs: Mapped[list["Job"]] = relationship(back_populates="user")
 
 
 class Job(Base):
     __tablename__ = "job"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    article = Column(Integer)
-    title = Column(String)
-    user_name = Column(Integer, ForeignKey("user.name"))
-    format = Column(Enum("pdf", "mobi", "epub"))
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    article: Mapped[int]
+    title: Mapped[str]
+    user_name: Mapped[int | None] = mapped_column(ForeignKey("user.name"))
+    format = mapped_column(Enum("pdf", "mobi", "epub"))
+
+    user: Mapped["User"] = relationship(back_populates="jobs")
 
 
 class ContextSession:
