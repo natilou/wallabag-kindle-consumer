@@ -2,12 +2,10 @@
 import asyncio
 import datetime
 
-from logbook import Logger
 from sqlalchemy.orm import joinedload
 
+from wallabag_kindle_consumer.logger import logger
 from wallabag_kindle_consumer.models import Job, User, context_session
-
-logger = Logger(__name__)
 
 
 class Consumer:
@@ -21,15 +19,15 @@ class Consumer:
         self._wait_fut = None  # type: asyncio.Future
 
     async def fetch_jobs(self, user):
-        logger.debug("Fetch entries for user {}", user.name)
+        logger.debug(f"Fetch entries for user {user.name}")
         async for entry in self.wallabag.fetch_entries(user):
-            logger.info("Schedule job to send entry {}", entry.id)
+            logger.info(f"Schedule job to send entry {entry.id}")
             job = Job(article=entry.id, title=entry.title, format=entry.tag.format)
             user.jobs.append(job)
             await self.wallabag.remove_tag(user, entry)
 
     async def process_job(self, job, session):
-        logger.info("Process export for job {id} ({format})", id=job.article, format=job.format)
+        logger.info(f"Process export for job {job.article} ({job.format})")
         data = await self.wallabag.export_article(job.user, job.article, job.format)
         await self.sender.send_mail(job, data)
         session.delete(job)
