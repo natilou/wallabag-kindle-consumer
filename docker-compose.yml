@@ -1,0 +1,79 @@
+services:
+  wallabag-kindle-consumer:
+    build: .
+    container_name: wallabag-kindle-consumer
+    restart: unless-stopped
+    depends_on:
+      - wallabag
+    environment:
+      - DB_URI=sqlite:////data/database.db
+      - DOMAIN=https://wallabag-kindle-consumer.local.adamantike.dev
+      - INTERFACE_HOST=0.0.0.0
+      - SMTP_FROM=wallabag-kindle@naty.dev
+      - SMTP_HOST=in-v3.mailjet.com
+      - SMTP_PORT=587
+      - SMTP_USER=0d4459cc935bb3a55a273a45e164abce
+      - SMTP_PASSWD=306b059b1549317b88a4d2c70d460304
+      - CLIENT_ID=1_5cz8hr1woloo8cows80ws00w48c0g8s4o0o4wk04s4wkkw8ccg
+      - CLIENT_SECRET=5g9o9pb24pwk4s8og8840sw0c40wkg4cs00kok88wkgk8wgkgg
+      # TODO: This is a custom variable added to avoid `smtp.starttls()` calls. Refactor code or fix postfix.
+      - SMTP_TLS=0
+      - TAG=kindle-pdf
+      - WALLABAG_HOST=http://wallabag:80
+    volumes:
+      - ./data:/data
+    ports:
+      - 8080:8080
+    stdin_open: true
+
+  wallabag:
+    image: wallabag/wallabag:2.6.2
+    container_name: wallabag
+    restart: unless-stopped
+    depends_on:
+      - wallabag-db
+      - wallabag-redis
+    environment:
+      - SYMFONY__ENV__DATABASE_DRIVER=pdo_pgsql
+      - SYMFONY__ENV__DATABASE_HOST=wallabag-db
+      - SYMFONY__ENV__DATABASE_NAME=postgres
+      - SYMFONY__ENV__DATABASE_PORT=5432
+      - SYMFONY__ENV__DOMAIN_NAME=http://127.0.0.1:80
+      - SYMFONY__ENV__FOSUSER_CONFIRMATION=false
+      - SYMFONY__ENV__FROM_EMAIL=natipauradev@gmail.com
+      - SYMFONY__ENV__MAILER_DSN=smtp:in-v3.mailjet.com
+      - SYMFONY__ENV__REDIS_HOST=wallabag-redis
+      - SYMFONY__ENV__TWOFACTOR_SENDER=natipauradev@gmail.com
+      - POSTGRES_USER=wallabag
+      - POSTGRES_PASSWORD=password
+      - SYMFONY__ENV__DATABASE_USER=wallabag
+      - SYMFONY__ENV__DATABASE_PASSWORD=password
+
+    volumes:
+      - ./apps/wallabag/images:/var/www/wallabag/web/assets/images
+    ports:
+      - 80:80
+
+  wallabag-db:
+    image: postgres:15.2
+    container_name: wallabag-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=wallabag
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - wallabag-db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  wallabag-redis:
+    image: redis:7.0
+    container_name: wallabag-redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 20s
+      timeout: 3s
+
+volumes:
+  wallabag-db:

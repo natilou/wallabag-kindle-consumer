@@ -5,11 +5,10 @@ import aiohttp_jinja2
 import jinja2
 from aiohttp import web
 from email_validator import EmailNotValidError, validate_email
-from logbook import Logger
+
+from wallabag_kindle_consumer.logger import logger
 
 from . import models, wallabag
-
-logger = Logger(__name__)
 
 
 class Validator:
@@ -142,7 +141,7 @@ class IndexView(ViewBase):
                     session.commit()
                     self._add_message(f"User {validator.username} successfully registered")
                     self._set_data({})
-                    logger.info("User {user} registered", user=validator.username)
+                    logger.info(f"User {validator.username} registered")
 
         return self._template({})
 
@@ -171,7 +170,7 @@ class ReLoginView(ViewBase):
                         user.active = True
                         session.commit()
                         self._add_message(f"User {validator.username} successfully updated.")
-                        logger.info("User {user} successfully updated.", user=user)
+                        logger.info(f"User {user} successfully updated.")
                     else:
                         self._add_errors({"auth": "Authentication against wallabag server failed"})
 
@@ -202,7 +201,7 @@ class DeleteView(ViewBase):
                         session.delete(user)
                         session.commit()
                         self._add_message(f"User {validator.username} successfully deleted.")
-                        logger.info("User {user} successfully deleted.", user=user)
+                        logger.info(f"User {user} successfully deleted.")
                     else:
                         self._add_errors({"auth": "Authentication against wallabag server failed"})
 

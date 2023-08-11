@@ -5,9 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formatdate, make_msgid
 
-from logbook import Logger
-
-logger = Logger(__name__)
+from wallabag_kindle_consumer.logger import logger
 
 
 class Sender:
@@ -40,9 +38,12 @@ class Sender:
         smtp.starttls()
         if self.user:
             smtp.login(self.user, self.passwd)
-        smtp.sendmail(self.from_addr, [email], msg.as_string())
-        smtp.quit()
-        logger.info(f"Mail with article {article} in format {format} with title '{title}' sent to {email}")
+        try:
+            smtp.sendmail(self.from_addr, [email], msg.as_string())
+            smtp.quit()
+            logger.info(f"Mail with article {article} in format {format} with title '{title}' sent to {email}")
+        except Exception:
+            logger.exception()
 
     async def send_mail(self, job, data):
         return self.loop.run_in_executor(
@@ -71,9 +72,12 @@ class Sender:
         smtp.starttls()
         if self.user:
             smtp.login(self.user, self.passwd)
-        smtp.sendmail(self.from_addr, [email], msg.as_string())
-        smtp.quit()
-        logger.info("Notify mail sent to {user}", user=email)
+        try:
+            smtp.sendmail(self.from_addr, [email], msg.as_string())
+            smtp.quit()
+            logger.info(f"Notify email sent to {email}")
+        except Exception:
+            logger.exception()
 
     async def send_warning(self, user, config):
         return self.loop.run_in_executor(None, self._send_warning, user.email, config)
