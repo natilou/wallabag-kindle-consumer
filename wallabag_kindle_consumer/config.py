@@ -2,9 +2,7 @@ import configparser
 import dataclasses
 import os
 
-from logbook import Logger
-
-logger = Logger(__name__)
+from wallabag_kindle_consumer.logger import logger
 
 
 @dataclasses.dataclass
@@ -27,17 +25,17 @@ class Config:
 
     @staticmethod
     def from_file(filename):
-        logger.info("read config from file {file}", file=filename)
+        logger.info(f"read config from file {filename}")
 
         if not os.path.exists(filename):
-            logger.warn("Config file {filename} does not exist", filename=filename)
+            logger.warning(f"Config file {filename} does not exist")
             return None
 
         parser = configparser.ConfigParser()
         parser.read(filename)
 
         if "DEFAULT" not in parser:
-            logger.warn("Config file {filename} does not contain a section DEFAULT", filename=filename)
+            logger.warning(f"Config file {filename} does not contain a section DEFAULT")
             return None
 
         dflt = parser["DEFAULT"]
@@ -52,8 +50,8 @@ class Config:
                     missing.append(field.name)
 
         if 0 != len(missing):
-            logger.warn(
-                "Config file {filename} does not contain configs for: {lst}", filename=filename, lst=", ".join(missing)
+            logger.warning(
+                f"Config file {filename} does not contain configs for: {', '.join(missing)}",
             )
             return None
 
@@ -72,7 +70,7 @@ class Config:
                     missing.append(field.name.upper())
 
         if 0 != len(missing):
-            logger.warn("Environment config does not contain configs for: {lst}", lst=", ".join(missing))
+            logger.warning(f"Environment config does not contain configs for: {', '.join(missing)}")
             return None
 
         return Config(**tmp)
