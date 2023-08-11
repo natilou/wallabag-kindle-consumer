@@ -1,12 +1,11 @@
 import asyncio
 from datetime import datetime, timedelta
 
-from logbook import Logger
 from sqlalchemy import func
 
-from .models import User, context_session
+from wallabag_kindle_consumer.logger import logger
 
-logger = Logger(__name__)
+from .models import User, context_session
 
 
 class Refresher:
@@ -52,7 +51,7 @@ class Refresher:
                 session.commit()
 
     async def _refresh_user(self, user):
-        logger.info("Refresh token for {}", user.name)
+        logger.info(f"Refresh token for {user.name}")
         if not await self.wallabag.refresh_token(user):
             await self.sender.send_warning(user, self.config)
             user.active = False

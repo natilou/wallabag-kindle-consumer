@@ -2,9 +2,8 @@ from collections import namedtuple
 from datetime import datetime, timedelta
 
 import aiohttp
-from logbook import Logger
 
-logger = Logger(__name__)
+from wallabag_kindle_consumer.logger import logger
 
 
 class Article:
@@ -52,13 +51,13 @@ class Wallabag:
         async with aiohttp.ClientSession() as session:
             async with session.post(self._url("/oauth/v2/token"), json=params) as resp:
                 if resp.status != 200:
-                    logger.warn("Cannot get token for user {user}", user=user.name)
+                    logger.error(f"Cannot get token for user {user.name}", exc_info=True)
                     return False
                 data = await resp.json()
                 user.auth_token = data["access_token"]
                 user.refresh_token = data["refresh_token"]
                 user.token_valid = datetime.utcnow() + timedelta(seconds=data["expires_in"])
-                logger.info("Got new token for {}", user.name)
+                logger.info(f"Got new token for {user.name}")
 
                 return True
 
@@ -74,7 +73,7 @@ class Wallabag:
         async with aiohttp.ClientSession() as session:
             async with session.post(self._url("/oauth/v2/token"), json=params) as resp:
                 if resp.status != 200:
-                    logger.warn("Cannot refresh token for user {user}", user=user.name)
+                    logger.error(f"Cannot refresh token for user {user.name}", exc_info=True)
                     return False
                 data = await resp.json()
                 user.auth_token = data["access_token"]
@@ -95,14 +94,14 @@ class Wallabag:
 
     async def fetch_entries(self, user):
         if user.auth_token is None:
-            logger.warn(f"No auth token for {user.name}")
+            logger.error(f"No auth token for {user.name}", exc_info=True)
             return
         async with aiohttp.ClientSession() as session:
             for tag in self.tags:
                 params = self._api_params(user, {"tags": tag.tag})
                 async with session.get(self._url("/api/entries.json"), params=params) as resp:
                     if resp.status != 200:
-                        logger.warn("Could not get entries of tag {tag} for user {user}", tag=tag.tag, user=user.name)
+                        logger.warning(f"Could not get entries of tag {tag.tag} for user {user.name}")
                         return
 
                     data = await resp.json()
@@ -121,18 +120,12 @@ class Wallabag:
         async with aiohttp.ClientSession() as session:
             async with session.delete(url, params=params) as resp:
                 if resp.status != 200:
-                    logger.warn(
-                        "Cannot remove tag {tag} from entry '{entry}' of user {user}",
-                        user=user.name,
-                        entry=article.title,
-                        tag=article.tag.tag,
+                    logger.warning(
+                        f"Cannot remove tag {article.tag.tag} from entry '{article.title}' of user {user.name}",
                     )
                     return
                 logger.info(
-                    "Removed tag {tag} from article '{article}' of user {user}",
-                    user=user.name,
-                    article=article.title,
-                    tag=article.tag.tag,
+                    f"Removed tag {article.tag.tag} from article '{article.title}' of user {user.name}",
                 )
 
     async def export_article(self, user, article_id, format):
@@ -142,11 +135,8 @@ class Wallabag:
         async with aiohttp.ClientSession() as session:
             async with session.get(url, params=params) as resp:
                 if resp.status != 200:
-                    logger.warn(
-                        "Cannot export article {article} of user {user} in format {format}",
-                        user=user.name,
-                        article=article_id,
-                        format=format,
+                    logger.error(
+                        f"Cannot export article {article_id} of user {user.name} in format {format}", exc_info=True
                     )
                     return
 
