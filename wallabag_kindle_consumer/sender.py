@@ -1,3 +1,4 @@
+import asyncio
 import smtplib
 from email.encoders import encode_base64
 from email.mime.application import MIMEApplication
@@ -5,11 +6,22 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formatdate, make_msgid
 
+from wallabag_kindle_consumer.config import Configuration
 from wallabag_kindle_consumer.logger import logger
+from wallabag_kindle_consumer.models import Job, User
 
 
 class Sender:
-    def __init__(self, loop, from_addr, smtp_server, smtp_port, smtp_user=None, smtp_passwd=None, smtp_tls=True):
+    def __init__(
+        self,
+        loop: asyncio.AbstractEventLoop,
+        from_addr: str,
+        smtp_server: str,
+        smtp_port: int,
+        smtp_user: str = "",
+        smtp_passwd: str = "",
+        smtp_tls: bool = True,
+    ):
         self.from_addr = from_addr
         self.loop = loop
         self.host = smtp_server
@@ -18,7 +30,7 @@ class Sender:
         self.passwd = smtp_passwd
         self.encryption_enabled = smtp_tls
 
-    def _send_mail(self, title, article, format, email, data):
+    def _send_mail(self, title: str, article: str, format: str, email: str, data: bytes) -> None:
         msg = MIMEMultipart()
         msg["Subject"] = f"Send article '{title}'"
         msg["From"] = self.from_addr
@@ -45,14 +57,14 @@ class Sender:
             smtp.quit()
             logger.info(f"Mail with article {article} in format {format} with title '{title}' sent to {email}")
         except Exception:
-            logger.exception()
+            logger.exception("Error sending mail")
 
-    async def send_mail(self, job, data):
+    async def send_mail(self, job: Job, data: bytes) -> asyncio.Future[None]:
         return self.loop.run_in_executor(
             None, self._send_mail, job.title, job.article, job.format, job.user.kindle_mail, data
         )
 
-    def _send_warning(self, email, config):
+    def _send_warning(self, email: str, config: Configuration) -> None:
         msg = MIMEMultipart()
         msg["Subject"] = "Wallabag-Kindle-Consumer Notice"
         msg["From"] = self.from_addr
@@ -80,7 +92,7 @@ class Sender:
             smtp.quit()
             logger.info(f"Notify email sent to {email}")
         except Exception:
-            logger.exception()
+            logger.exception("Error sending notify mail")
 
-    async def send_warning(self, user, config):
+    async def send_warning(self, user: User, config: Configuration) -> asyncio.Future[None]:
         return self.loop.run_in_executor(None, self._send_warning, user.email, config)

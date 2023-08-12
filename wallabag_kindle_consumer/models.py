@@ -1,7 +1,10 @@
 import datetime
+from types import TracebackType
 
 from sqlalchemy import Enum, ForeignKey, create_engine
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
+from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, relationship, sessionmaker
+
+from wallabag_kindle_consumer.config import Configuration
 
 
 class Base(DeclarativeBase):
@@ -37,32 +40,36 @@ class Job(Base):
 
 
 class ContextSession:
-    def __init__(self, session_maker):
+    def __init__(self, session_maker: sessionmaker[Session]):
         self.session_maker = session_maker
 
-    def __enter__(self):
+    def __enter__(self) -> Session:
         self.session = self.session_maker()
         return self.session
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
         self.session.close()
 
 
-def context_session(config):
+def context_session(config: Configuration) -> ContextSession:
     return ContextSession(session_maker(config))
 
 
-def session_maker(config):
-    Session = sessionmaker(autocommit=False, autoflush=False, bind=create_engine(config.db_uri))
-    return Session
+def session_maker(config: Configuration) -> sessionmaker[Session]:
+    return sessionmaker(autocommit=False, autoflush=False, bind=create_engine(config.db_uri))
 
 
-def create_db(config):
+def create_db(config: Configuration) -> None:
     engine = create_engine(config.db_uri)
     Base.metadata.create_all(engine)
 
 
-def re_create_db(config):
+def re_create_db(config: Configuration) -> None:
     engine = create_engine(config.db_uri)
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)

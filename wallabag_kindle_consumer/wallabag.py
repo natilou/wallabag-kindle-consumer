@@ -1,9 +1,12 @@
 from collections import namedtuple
+from collections.abc import AsyncIterator
 from datetime import datetime, timedelta
 
 import aiohttp
 
+from wallabag_kindle_consumer.config import Configuration
 from wallabag_kindle_consumer.logger import logger
+from wallabag_kindle_consumer.models import User
 
 
 class Article:
@@ -13,7 +16,7 @@ class Article:
         self.title = title
         self.tag = tag
 
-    def tag_id(self):
+    def tag_id(self) -> int:
         for t in self.tags:
             if t["label"] == self.tag.tag:
                 return t["id"]
@@ -24,7 +27,7 @@ class Article:
 Tag = namedtuple("Tag", ["tag", "format"])
 
 
-def make_tags(tag):
+def make_tags(tag: str) -> tuple[Tag, ...]:
     return (
         Tag(tag=f"{tag}", format="epub"),
         Tag(tag=f"{tag}-epub", format="epub"),
@@ -34,12 +37,12 @@ def make_tags(tag):
 
 
 class Wallabag:
-    def __init__(self, config):
+    def __init__(self, config: Configuration):
         self.config = config
         self.tag = "kindle"
         self.tags = make_tags(self.tag)
 
-    async def get_token(self, user, passwd):
+    async def get_token(self, user: User, passwd: str) -> bool:
         params = {
             "grant_type": "password",
             "client_id": self.config.client_id,
@@ -61,7 +64,7 @@ class Wallabag:
 
                 return True
 
-    async def refresh_token(self, user):
+    async def refresh_token(self, user: User) -> bool:
         params = {
             "grant_type": "refresh_token",
             "client_id": self.config.client_id,
@@ -82,17 +85,17 @@ class Wallabag:
 
                 return True
 
-    def _api_params(self, user, params=None):
+    def _api_params(self, user: User, params: dict[str, str] | None = None) -> dict[str, str]:
         if params is None:
             params = {}
 
         params["access_token"] = user.auth_token
         return params
 
-    def _url(self, url):
+    def _url(self, url: str) -> str:
         return self.config.wallabag_host + url
 
-    async def fetch_entries(self, user):
+    async def fetch_entries(self, user: User) -> AsyncIterator[Article]:
         if user.auth_token is None:
             logger.error(f"No auth token for {user.name}", exc_info=True)
             return
@@ -112,7 +115,7 @@ class Wallabag:
                     for article in articles:
                         yield Article(tag=tag, **article)
 
-    async def remove_tag(self, user, article):
+    async def remove_tag(self, user: User, article: Article) -> None:
         params = self._api_params(user)
         tag = article.tag_id()
         url = self._url(f"/api/entries/{article.id}/tags/{tag}.json")
@@ -128,7 +131,7 @@ class Wallabag:
                     f"Removed tag {article.tag.tag} from article '{article.title}' of user {user.name}",
                 )
 
-    async def export_article(self, user, article_id, format):
+    async def export_article(self, user: User, article_id: int, format: str) -> bytes | None:
         params = self._api_params(user)
         url = self._url(f"/api/entries/{article_id}/export.{format}")
 
@@ -138,6 +141,6 @@ class Wallabag:
                     logger.error(
                         f"Cannot export article {article_id} of user {user.name} in format {format}", exc_info=True
                     )
-                    return
+                    return None
 
                 return await resp.read()

@@ -4,6 +4,7 @@ import argparse
 import asyncio
 import logging
 import signal
+from collections.abc import Callable
 
 import uvloop
 
@@ -16,7 +17,7 @@ from wallabag_kindle_consumer.sender import Sender
 from wallabag_kindle_consumer.wallabag import Wallabag
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Wallabag-Kindle-Consumer")
     parser.add_argument("--cfg", help="Path to config file", required=False)
     parser.add_argument("--refresher", help="Start token refresher", action="store_true")
@@ -45,9 +46,9 @@ if __name__ == "__main__":
         models.create_db(config)
         logging.info("Database created.")
 
-    on_stop = []
+    on_stop: list[Callable[[], None]] = []
 
-    def _stop():
+    def _stop() -> None:
         for cb in on_stop:
             cb()
 

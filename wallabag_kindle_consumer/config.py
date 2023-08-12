@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import dataclasses
 
 from decouple import Config, RepositoryEnv, UndefinedValueError, config
@@ -25,7 +27,7 @@ class Configuration:
     interface_port: int
 
     @classmethod
-    def build(cls, config_file_path: str = None):
+    def build(cls, config_file_path: str | None = None) -> Configuration:
         logger.info("Building configuration")
 
         cfg = config
@@ -51,4 +53,5 @@ class Configuration:
                 interface_port=cfg("INTERFACE_PORT", default=8080, cast=int),
             )
         except UndefinedValueError:
-            logger.exception("Failed to retrieve configuration value")
+            logger.exception("Failed to build configuration object")
+            raise
