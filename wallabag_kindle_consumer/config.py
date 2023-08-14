@@ -1,12 +1,12 @@
-import configparser
 import dataclasses
-import os
+
+from decouple import Config, RepositoryEnv, UndefinedValueError, config
 
 from wallabag_kindle_consumer.logger import logger
 
 
 @dataclasses.dataclass
-class Config:
+class Configuration:
     wallabag_host: str
     db_uri: str
     client_id: str
@@ -17,60 +17,36 @@ class Config:
     smtp_port: int
     smtp_user: str
     smtp_passwd: str
-    tag: str = "kindle"
-    refresh_grace: int = 120
-    consume_interval: int = 30
-    interface_host: str = "127.0.0.1"
-    interface_port: int = 8080
+    tag: str
+    refresh_grace: int
+    consume_interval: int
+    interface_host: str
+    interface_port: int
 
-    @staticmethod
-    def from_file(filename):
-        logger.info(f"read config from file {filename}")
+    @classmethod
+    def build(cls, config_file_path: str = None):
+        logger.info("Building configuration")
 
-        if not os.path.exists(filename):
-            logger.warning(f"Config file {filename} does not exist")
-            return None
-
-        parser = configparser.ConfigParser()
-        parser.read(filename)
-
-        if "DEFAULT" not in parser:
-            logger.warning(f"Config file {filename} does not contain a section DEFAULT")
-            return None
-
-        dflt = parser["DEFAULT"]
-
-        tmp = {}
-        missing = []
-        for field in dataclasses.fields(Config):
-            if field.name in dflt:
-                tmp[field.name] = field.type(dflt[field.name])
-            else:
-                if field.default is dataclasses.MISSING:
-                    missing.append(field.name)
-
-        if 0 != len(missing):
-            logger.warning(
-                f"Config file {filename} does not contain configs for: {', '.join(missing)}",
+        cfg = config
+        if config_file_path:
+            cfg = Config(RepositoryEnv(config_file_path))
+        try:
+            return cls(
+                wallabag_host=cfg("WALLABAG_HOST"),
+                db_uri=cfg("DB_URI"),
+                client_id=cfg("CLIENT_ID"),
+                client_secret=cfg("CLIENT_SECRET"),
+                domain=cfg("DOMAIN"),
+                smtp_from=cfg("SMTP_FROM"),
+                smtp_host=cfg("SMTP_HOST"),
+                smtp_port=cfg("SMTP_PORT", cast=int),
+                smtp_user=cfg("SMTP_USER"),
+                smtp_passwd=cfg("SMTP_PASSWD"),
+                tag=cfg("TAG", default="kindle"),
+                refresh_grace=cfg("REFRESH_GRACE", default=120, cast=int),
+                consume_interval=cfg("CONSUME_INTERVAL", default=30, cast=int),
+                interface_host=cfg("INTERFACE_HOST", default="127.0.0.1"),
+                interface_port=cfg("INTERFACE_PORT", default=8080, cast=int),
             )
-            return None
-
-        return Config(**tmp)
-
-    @staticmethod
-    def from_env():
-        logger.info("Read config from environment")
-        tmp = {}
-        missing = []
-        for field in dataclasses.fields(Config):
-            if field.name.upper() in os.environ:
-                tmp[field.name] = field.type(os.environ[field.name.upper()])
-            else:
-                if field.default is dataclasses.MISSING:
-                    missing.append(field.name.upper())
-
-        if 0 != len(missing):
-            logger.warning(f"Environment config does not contain configs for: {', '.join(missing)}")
-            return None
-
-        return Config(**tmp)
+        except UndefinedValueError:
+            logger.exception("Failed to retrieve configuration value")
