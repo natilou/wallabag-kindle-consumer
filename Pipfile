@@ -3,6 +3,7 @@ aiohttp = "~= 3.8"
 aiohttp-jinja2 = "~= 1.5"
 email-validator = "~= 2.0"
 Jinja2 = "~= 3.1"
+python-decouple = "~= 3.8"
 SQLAlchemy = "~= 2.0"
 uvloop = "~= 0.17"
 

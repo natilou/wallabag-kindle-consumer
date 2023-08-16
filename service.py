@@ -8,7 +8,7 @@ import signal
 import uvloop
 
 from wallabag_kindle_consumer import models
-from wallabag_kindle_consumer.config import Config
+from wallabag_kindle_consumer.config import Configuration
 from wallabag_kindle_consumer.consumer import Consumer
 from wallabag_kindle_consumer.interface import App
 from wallabag_kindle_consumer.refresher import Refresher
@@ -18,8 +18,7 @@ from wallabag_kindle_consumer.wallabag import Wallabag
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Wallabag-Kindle-Consumer")
-    parser.add_argument("--cfg", help="config file", required=False)
-    parser.add_argument("--env", help="Read config from env", action="store_true")
+    parser.add_argument("--cfg", help="Path to config file", required=False)
     parser.add_argument("--refresher", help="Start token refresher", action="store_true")
     parser.add_argument("--interface", help="Start web interface", action="store_true")
     parser.add_argument("--consumer", help="Start article consumer", action="store_true")
@@ -40,17 +39,7 @@ if __name__ == "__main__":
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
 
-    config = Config.from_file("config.ini")
-
-    if "cfg" in args and args.cfg is not None:
-        new = Config.from_file(args.cfg)
-        if new is not None:
-            config = new
-
-    if "env" in args and args.env:
-        new = Config.from_env()
-        if new is not None:
-            config = new
+    config = Configuration.build(config_file_path=args.cfg)
 
     if args.create_db:
         models.create_db(config)
