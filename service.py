@@ -57,7 +57,15 @@ if __name__ == "__main__":
     loop.add_signal_handler(signal.SIGINT, _stop)
 
     wallabag = Wallabag(config)
-    sender = Sender(loop, config.smtp_from, config.smtp_host, config.smtp_port, config.smtp_user, config.smtp_passwd)
+    sender = Sender(
+        loop=loop,
+        from_addr=config.smtp_from,
+        smtp_server=config.smtp_host,
+        smtp_port=config.smtp_port,
+        smtp_user=config.smtp_user,
+        smtp_passwd=config.smtp_passwd,
+        smtp_tls=config.smtp_tls,
+    )
 
     if args.refresher:
         logging.info("Create Refresher")

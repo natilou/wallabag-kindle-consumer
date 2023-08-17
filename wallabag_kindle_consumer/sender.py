@@ -9,13 +9,14 @@ from wallabag_kindle_consumer.logger import logger
 
 
 class Sender:
-    def __init__(self, loop, from_addr, smtp_server, smtp_port, smtp_user=None, smtp_passwd=None):
+    def __init__(self, loop, from_addr, smtp_server, smtp_port, smtp_user=None, smtp_passwd=None, smtp_tls=True):
         self.from_addr = from_addr
         self.loop = loop
         self.host = smtp_server
         self.port = smtp_port
         self.user = smtp_user
         self.passwd = smtp_passwd
+        self.encryption_enabled = smtp_tls
 
     def _send_mail(self, title, article, format, email, data):
         msg = MIMEMultipart()
@@ -35,7 +36,8 @@ class Sender:
         msg.attach(mobi)
 
         smtp = smtplib.SMTP(host=self.host, port=self.port)
-        smtp.starttls()
+        if self.encryption_enabled:
+            smtp.starttls()
         if self.user:
             smtp.login(self.user, self.passwd)
         try:
@@ -69,7 +71,8 @@ class Sender:
         msg.attach(txt)
 
         smtp = smtplib.SMTP(host=self.host, port=self.port)
-        smtp.starttls()
+        if self.encryption_enabled:
+            smtp.starttls()
         if self.user:
             smtp.login(self.user, self.passwd)
         try:
