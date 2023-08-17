@@ -47,7 +47,7 @@ The following table describes all options:
 |`SMTP_PORT`            | required |            | The Port of the SMTP server. |
 |`SMTP_USER`            | required |            | The user for SMTP auth. |
 |`SMTP_PASSWD`          | required |            | The password for SMTP auth. |
-|`SMTP_TLS   `          | optional |  True      | Enable email encryption. |
+|`SMTP_TLS`             | optional |  True      | Enable email encryption. Set to False or 0 to disable it.|
 |`TAG`                  | optional | `kindle`   | The tag to consume. |
 |`REFRESH_GRACE`        | optional | `120`      | The amount of seconds the token is refreshed before expiring. |
 |`CONSUME_INTERVAL`     | optional | `30`       | The time in seconds between two consume cycles. |
