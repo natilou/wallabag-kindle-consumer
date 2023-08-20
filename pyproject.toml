@@ -2,3 +2,8 @@
 line-length = 120
 [tool.isort]
 profile = "black"
+[tool.mypy]
+python_version = "3.11"
+[[tool.mypy.overrides]]
+module = "decouple"
+ignore_missing_imports = true
