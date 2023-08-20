@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.0](https://github.com/natilou/wallabag-kindle-consumer/compare/v0.1.1...v0.2.0) (2023-08-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* refactor of Config class
+
+### Miscellaneous Chores
+
+* refactor of Config class ([397c614](https://github.com/natilou/wallabag-kindle-consumer/commit/397c6141fe6e433ad3f4938b655a705adf07f421))
+
 ## [0.1.1](https://github.com/natilou/wallabag-kindle-consumer/compare/v0.1.0...v0.1.1) (2023-07-29)
 
 
