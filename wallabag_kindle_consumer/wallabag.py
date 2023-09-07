@@ -39,7 +39,7 @@ def make_tags(tag: str) -> tuple[Tag, ...]:
 class Wallabag:
     def __init__(self, config: Configuration):
         self.config = config
-        self.tag = "kindle"
+        self.tag = config.tag
         self.tags = make_tags(self.tag)
 
     async def get_token(self, user: User, passwd: str) -> bool:
