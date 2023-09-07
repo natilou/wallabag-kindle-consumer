@@ -1,0 +1,33 @@
+# docker compose for testing purposes
+services:
+  wallabag-kindle-consumer:
+    build: .
+    container_name: wallabag-kindle-consumer
+    restart: unless-stopped
+    environment:
+      - DB_URI=sqlite:////data/database.db
+      - DOMAIN=https://example.com
+      - INTERFACE_HOST=0.0.0.0
+      - SMTP_FROM=kindle@consumer.com
+      - SMTP_HOST=mail.com
+      - SMTP_PORT=587
+      - SMTP_USER=
+      - SMTP_PASSWD=
+      - CLIENT_ID=1_EXAMPL3CLIENTID459W8509
+      - CLIENT_SECRET=2049390EXAMPLECLIENTSECR3Tkslgsa
+      - SMTP_TLS=0
+      - TAG=kindle
+      - WALLABAG_HOST=http://mock-server:80
+    volumes:
+      - ./data:/data
+    ports:
+      - 8080:8080
+    stdin_open: true
+    depends_on:
+      - mock-server
+
+  mock-server:
+    build: ./mock_wallabag_api
+    ports:
+      - 80:80
+    stdin_open: true
