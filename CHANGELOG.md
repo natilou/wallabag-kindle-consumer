@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/natilou/wallabag-kindle-consumer/compare/v0.2.0...v0.2.1) (2023-09-08)
+
+
+### Features
+
+* Implemented configuration to set a default format for the TAG option. ([b859fdf](https://github.com/natilou/wallabag-kindle-consumer/commit/b859fdf0f6edf3b6f60cdc00e868b58477d81af5))
+
 ## [0.2.0](https://github.com/natilou/wallabag-kindle-consumer/compare/v0.1.1...v0.2.0) (2023-08-20)
 
 
