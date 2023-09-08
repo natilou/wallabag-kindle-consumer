@@ -17,6 +17,7 @@ services:
       - CLIENT_SECRET=2049390EXAMPLECLIENTSECR3Tkslgsa
       - SMTP_TLS=0
       - TAG=kindle
+      - DEFAULT_FORMAT=pdf
       - WALLABAG_HOST=http://mock-server:80
     volumes:
       - ./data:/data
