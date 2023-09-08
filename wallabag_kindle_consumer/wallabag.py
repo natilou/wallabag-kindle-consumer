@@ -27,9 +27,9 @@ class Article:
 Tag = namedtuple("Tag", ["tag", "format"])
 
 
-def make_tags(tag: str) -> tuple[Tag, ...]:
+def make_tags(tag: str, default_format: str) -> tuple[Tag, ...]:
     return (
-        Tag(tag=f"{tag}", format="epub"),
+        Tag(tag=f"{tag}", format=default_format),
         Tag(tag=f"{tag}-epub", format="epub"),
         Tag(tag=f"{tag}-mobi", format="mobi"),
         Tag(tag=f"{tag}-pdf", format="pdf"),
@@ -40,7 +40,7 @@ class Wallabag:
     def __init__(self, config: Configuration):
         self.config = config
         self.tag = config.tag
-        self.tags = make_tags(self.tag)
+        self.tags = make_tags(tag=self.tag, default_format=config.default_format)
 
     async def get_token(self, user: User, passwd: str) -> bool:
         params = {

@@ -94,7 +94,7 @@ class ViewBase(web.View):
                 "data": self._data,
                 "messages": self._messages,
                 "wallabag_host": self._cfg.wallabag_host,
-                "tags": [t.tag for t in wallabag.make_tags(self._cfg.tag)],
+                "tags": [t.tag for t in wallabag.make_tags(tag=self._cfg.tag, default_format=self._cfg.default_format)],
             }
         )
         return vars

@@ -21,6 +21,7 @@ class Configuration:
     smtp_passwd: str
     smtp_tls: bool
     tag: str
+    default_format: str
     refresh_grace: int
     consume_interval: int
     interface_host: str
@@ -47,6 +48,7 @@ class Configuration:
                 smtp_passwd=cfg("SMTP_PASSWD"),
                 smtp_tls=cfg("SMTP_TLS", default=True, cast=bool),
                 tag=cfg("TAG", default="kindle"),
+                default_format=cfg("DEFAULT_FORMAT", default="epub"),
                 refresh_grace=cfg("REFRESH_GRACE", default=120, cast=int),
                 consume_interval=cfg("CONSUME_INTERVAL", default=30, cast=int),
                 interface_host=cfg("INTERFACE_HOST", default="127.0.0.1"),
