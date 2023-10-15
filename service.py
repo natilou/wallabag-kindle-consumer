@@ -2,7 +2,6 @@
 
 import argparse
 import asyncio
-import logging
 import signal
 from collections.abc import Callable
 
@@ -12,6 +11,7 @@ from wallabag_kindle_consumer import models
 from wallabag_kindle_consumer.config import Configuration
 from wallabag_kindle_consumer.consumer import Consumer
 from wallabag_kindle_consumer.interface import App
+from wallabag_kindle_consumer.logger import logger
 from wallabag_kindle_consumer.refresher import Refresher
 from wallabag_kindle_consumer.sender import Sender
 from wallabag_kindle_consumer.wallabag import Wallabag
@@ -24,7 +24,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--interface", help="Start web interface", action="store_true")
     parser.add_argument("--consumer", help="Start article consumer", action="store_true")
     parser.add_argument("--create_db", help="Try to create the db", action="store_true")
-    parser.add_argument("--debug", help="Enable debug logging", action="store_true")
 
     return parser.parse_args()
 
@@ -36,15 +35,12 @@ if __name__ == "__main__":
 
     args = parse_args()
 
-    logging.basicConfig(level=logging.INFO)
-    if args.debug:
-        logging.basicConfig(level=logging.DEBUG)
-
     config = Configuration.build(config_file_path=args.cfg)
+    logger.setLevel(config.log_level)
 
     if args.create_db:
         models.create_db(config)
-        logging.info("Database created.")
+        logger.info("Database created.")
 
     on_stop: list[Callable[[], None]] = []
 
@@ -69,19 +65,19 @@ if __name__ == "__main__":
     )
 
     if args.refresher:
-        logging.info("Create Refresher")
+        logger.info("Create Refresher")
         refresher = Refresher(config, wallabag, sender)
         loop.create_task(refresher.refresh())
         on_stop.append(lambda: refresher.stop())
 
     if args.consumer:
-        logging.info("Create Consumer")
+        logger.info("Create Consumer")
         consumer = Consumer(wallabag, config, sender)
         loop.create_task(consumer.consume())
         on_stop.append(lambda: consumer.stop())
 
     if args.interface:
-        logging.info("Create Interface")
+        logger.info("Create Interface")
         webapp = App(config, wallabag)
         loop.create_task(webapp.register_server())
         on_stop.append(lambda: webapp.stop())
