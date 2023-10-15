@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/natilou/wallabag-kindle-consumer/compare/v0.2.1...v0.2.2) (2023-10-15)
+
+
+### Bug Fixes
+
+* adding LOG_LEVEL env. variable. Fixes not showing the DEBUG messages. By default the value is INFO, but the user can change it for DEBUG, ERROR, WARNING, etc. ([0a1c0f7](https://github.com/natilou/wallabag-kindle-consumer/commit/0a1c0f75ef400a404613e7c4d0d164212ec755f1))
+
 ## [0.2.1](https://github.com/natilou/wallabag-kindle-consumer/compare/v0.2.0...v0.2.1) (2023-09-08)
 
 
