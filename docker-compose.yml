@@ -19,6 +19,7 @@ services:
       - TAG=kindle
       - DEFAULT_FORMAT=pdf
       - WALLABAG_HOST=http://mock-server:80
+      - LOG_LEVEL=DEBUG
     volumes:
       - ./data:/data
     ports:

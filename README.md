@@ -49,11 +49,12 @@ The following table describes all options:
 |`SMTP_PASSWD`          | required |            | The password for SMTP auth. |
 |`SMTP_TLS`             | optional |  True      | Enable email encryption. Set to False or 0 to disable it.|
 |`TAG`                  | optional | `kindle`   | The tag to consume. |
-|`DEFAULT_FORMAT`       | optional | `epub  `   | The default format for the TAG option. Available formats from [Wallabag API](https://app.wallabag.it/api/doc/): xml, json, txt, csv, pdf, epub, mobi|
+|`DEFAULT_FORMAT`       | optional | `epub`     | The default format for the TAG option. Available formats from [Wallabag API](https://app.wallabag.it/api/doc/): xml, json, txt, csv, pdf, epub, mobi|
 |`REFRESH_GRACE`        | optional | `120`      | The amount of seconds the token is refreshed before expiring. |
 |`CONSUME_INTERVAL`     | optional | `30`       | The time in seconds between two consume cycles. |
 |`INTERFACE_HOST`       | optional | `120.0.0.1`| The IP the user interface should bind to.  |
 |`INTERFACE_PORT`       | optional | `8080`     | The port the user interface should bind. |
+|`LOG_LEVEL`            | optional | `INFO`     | Logger level. It can be changed to 'DEBUG', 'ERROR', etc. |
 
 The configuration is read by default from the environment. But it could be read either from a `.ini` or `.env` file or from a path given to the commandline option `--cfg`.
 
