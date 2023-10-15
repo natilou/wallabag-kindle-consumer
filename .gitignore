@@ -172,3 +172,5 @@ Session.vim
 tags
 
 data/
+
+.docker-compose.yaml

@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import dataclasses
+import logging
 
 from decouple import Config, RepositoryEnv, UndefinedValueError, config
 
-from wallabag_kindle_consumer.logger import logger
+logging.basicConfig(level=logging.INFO)
 
 
 @dataclasses.dataclass
@@ -26,10 +27,11 @@ class Configuration:
     consume_interval: int
     interface_host: str
     interface_port: int
+    log_level: str
 
     @classmethod
     def build(cls, config_file_path: str | None = None) -> Configuration:
-        logger.info("Building configuration")
+        logging.info("Building configuration")
 
         cfg = config
         if config_file_path:
@@ -53,7 +55,8 @@ class Configuration:
                 consume_interval=cfg("CONSUME_INTERVAL", default=30, cast=int),
                 interface_host=cfg("INTERFACE_HOST", default="127.0.0.1"),
                 interface_port=cfg("INTERFACE_PORT", default=8080, cast=int),
+                log_level=cfg("LOG_LEVEL", default="INFO"),
             )
         except UndefinedValueError:
-            logger.exception("Failed to build configuration object")
+            logging.exception("Failed to build configuration object")
             raise
