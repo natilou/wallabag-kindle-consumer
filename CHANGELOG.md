@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/natilou/wallabag-kindle-consumer/compare/v0.2.2...v0.2.3) (2024-01-13)
+
+
+### Bug Fixes
+
+* Small documentation typo fixes ([04478f5](https://github.com/natilou/wallabag-kindle-consumer/commit/04478f53ac61a427013f30e5d62c4aa44beb06cc))
+
 ## [0.2.2](https://github.com/natilou/wallabag-kindle-consumer/compare/v0.2.1...v0.2.2) (2023-10-15)
 
 
