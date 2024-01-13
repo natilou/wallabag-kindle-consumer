@@ -1,20 +1,19 @@
-This project is a fork  from [janLo/wallabag-kindle-consumer](https://github.com/janLo/wallabag-kindle-consumer)
+This project is a fork from [janLo/wallabag-kindle-consumer](https://github.com/janLo/wallabag-kindle-consumer)
 Since the original repository has not been maintained, I am now actively maintaining and working to improve it.
 
-# Push tagged wallabag articles to kindle
+# Push tagged wallabag articles to Kindle
 
-
-This is a service that polls a [Wallabag](https://wallabag.org/en)
+This is a service that polls a [Wallabag](https://wallabag.org/)
 instance for articles with a certain tag (`kindle`, `kindle-mobi` or
 `kindle-pdf`). If it finds an article tagged with one of those tags, it
 exports the article in the requested format and sends it via email to a
-configured kindle address.
+configured Kindle address.
 
 The software consists of three parts:
 
 * **consumer:** This is the part that consumes the tags from Wallabag
-  and pushes them to the kindle addresses.
-* **refresher:** As Wallabag gives no permanent api tokens we need to
+  and pushes them to the Kindle addresses.
+* **refresher:** As Wallabag gives no permanent API tokens we need to
   refresh them regularly. This part asks for a new token every time the
   old one is due to expire. With this method we don't need to save the
   users password. If we miss a refresh cycle (for example because the
@@ -35,26 +34,26 @@ You can just copy and modify the example config.
 
 The following table describes all options:
 
-|file-option  / env-var | type     | default    | description |
-------------------------|----------|------------|----------|
-|`WALLABAG_HOST`        | required |            | The http url of the Wallabag host. |
-|`DB_URI`               | required |            | The dbapi url for the database. |
-|`CLIENT_ID`            | required |            | The Wallabag client id. Read [here](https://doc.wallabag.org/en/developer/api/oauth.html) how to get it.    |
-|`CLIENT_SECRET`        | required |            | The Wallabag client secret. Read above. |
-|`DOMAIN`               | required |            | the domain the interface for the service is accessible on. |
-|`SMTP_FROM`            | required |            | The from-address to use. |
-|`SMTP_HOST`            | required |            | The SMTP hostname or ip. |
-|`SMTP_PORT`            | required |            | The Port of the SMTP server. |
-|`SMTP_USER`            | required |            | The user for SMTP auth. |
-|`SMTP_PASSWD`          | required |            | The password for SMTP auth. |
-|`SMTP_TLS`             | optional |  True      | Enable email encryption. Set to False or 0 to disable it.|
-|`TAG`                  | optional | `kindle`   | The tag to consume. |
-|`DEFAULT_FORMAT`       | optional | `epub`     | The default format for the TAG option. Available formats from [Wallabag API](https://app.wallabag.it/api/doc/): xml, json, txt, csv, pdf, epub, mobi|
-|`REFRESH_GRACE`        | optional | `120`      | The amount of seconds the token is refreshed before expiring. |
-|`CONSUME_INTERVAL`     | optional | `30`       | The time in seconds between two consume cycles. |
-|`INTERFACE_HOST`       | optional | `120.0.0.1`| The IP the user interface should bind to.  |
-|`INTERFACE_PORT`       | optional | `8080`     | The port the user interface should bind. |
-|`LOG_LEVEL`            | optional | `INFO`     | Logger level. It can be changed to 'DEBUG', 'ERROR', etc. |
+|file-option / env-var | type     | default     | description |
+-----------------------|----------|-------------|-------------|
+|`WALLABAG_HOST`       | required |             | The http url of the Wallabag host. |
+|`DB_URI`              | required |             | The dbapi url for the database. |
+|`CLIENT_ID`           | required |             | The Wallabag client id. Read [here](https://doc.wallabag.org/en/developer/api/oauth.html) how to get it. |
+|`CLIENT_SECRET`       | required |             | The Wallabag client secret. Read above. |
+|`DOMAIN`              | required |             | the domain the interface for the service is accessible on. |
+|`SMTP_FROM`           | required |             | The from-address to use. |
+|`SMTP_HOST`           | required |             | The SMTP hostname or ip. |
+|`SMTP_PORT`           | required |             | The Port of the SMTP server. |
+|`SMTP_USER`           | required |             | The user for SMTP auth. |
+|`SMTP_PASSWD`         | required |             | The password for SMTP auth. |
+|`SMTP_TLS`            | optional |  True       | Enable email encryption. Set to `False` or `0` to disable it. |
+|`TAG`                 | optional | `kindle`    | The tag to consume. |
+|`DEFAULT_FORMAT`      | optional | `epub`      | The default format for the TAG option. Available formats from [Wallabag API](https://app.wallabag.it/api/doc/): xml, json, txt, csv, pdf, epub, mobi |
+|`REFRESH_GRACE`       | optional | `120`       | The amount of seconds the token is refreshed before expiring. |
+|`CONSUME_INTERVAL`    | optional | `30`        | The time in seconds between two consume cycles. |
+|`INTERFACE_HOST`      | optional | `120.0.0.1` | The IP the user interface should bind to.  |
+|`INTERFACE_PORT`      | optional | `8080`      | The port the user interface should bind. |
+|`LOG_LEVEL`           | optional | `INFO`      | Logger level. It can be changed to 'DEBUG', 'ERROR', etc. |
 
 The configuration is read by default from the environment. But it could be read either from a `.ini` or `.env` file or from a path given to the commandline option `--cfg`.
 
